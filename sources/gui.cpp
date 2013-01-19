@@ -30,7 +30,7 @@ GUI::GUI(QWidget * parent)
    ui.editor_output->setReadOnly(true);
    ui.combobox_loglevel->setCurrentIndex(0);
 
-   connect(ui.button_start,  SIGNAL(clicked()),                SLOT(slot_startButtonPresed()));
+   connect(ui.button_start,  SIGNAL(clicked()),                SLOT(slot_startButtonPressed()));
    connect(ui.combobox_rate, SIGNAL(currentIndexChanged(int)), SLOT(slot_rateChanged(int)));
    connect(ui.line_thread,   SIGNAL(textChanged(QString)),     SLOT(slot_threadChanged(QString)));
    connect(ui.line_captcha,  SIGNAL(returnPressed()),          SLOT(slot_captchaEntered()));
@@ -41,7 +41,8 @@ GUI::GUI(QWidget * parent)
     */
    ui.spinbox_max_proxies->setValue(50);
 
-   connect(ui.button_proxies_accept, SIGNAL(clicked()), SLOT(slot_AcceptProxiesButtonPresed()));
+   connect(ui.button_proxies_accept,    SIGNAL(clicked()), SLOT(slot_acceptProxiesButtonPressed()));
+   connect(ui.button_proxies_from_file, SIGNAL(clicked()), SLOT(slot_loadProxiesFromFileButtonPressed()));
 
    printMessage("Привет.", 0);
 }
@@ -301,10 +302,56 @@ void GUI::stopPlusoners()
    m_counters.waiting = m_plusoners.count();
 }
 
+void GUI::acceptProxies()
+{
+   m_proxies_is_accepted = true;
+
+   printMessage(QString("%1 прокси загружены.").arg(m_proxylist.count()), 0);
+
+   // Создаём плюсонеры
+   stopPlusoners();
+   deletePlusoners();
+   createPlusoners();
+
+   // Блокируем элементы управления во вкладке "Прокси"
+   ui.editor_proxies->clear();
+   ui.editor_proxies->setPlainText(m_proxylist.toString());
+   ui.button_proxies_accept->setText("Очистить");
+   ui.button_proxies_from_file->setEnabled(false);
+   ui.editor_proxies->setReadOnly(true);
+   ui.spinbox_ignore_proxies->setEnabled(false);
+   ui.spinbox_max_proxies->setEnabled(false);
+
+   ui.label_proxy_count->setNum(m_proxylist.count());
+}
+
+void GUI::clearProxies()
+{
+   m_proxies_is_accepted = false;
+   m_proxylist.clear();
+
+   // Удаляем плюсонеры
+   stopPlusoners();
+   deletePlusoners();
+
+   // Счётчики
+   updateCounters();
+
+   // Разблокируем элементы управления во вкладке "Прокси"
+   ui.button_proxies_accept->setText("Принять");
+   ui.button_proxies_from_file->setEnabled(true);
+   ui.editor_proxies->setReadOnly(false);
+   ui.editor_proxies->clear();
+   ui.spinbox_ignore_proxies->setEnabled(true);
+   ui.spinbox_max_proxies->setEnabled(true);
+
+   ui.label_proxy_count->setNum(m_proxylist.count());
+}
+
 /*
  * Нажата кнопка старт/стоп
  */
-void GUI::slot_startButtonPresed()
+void GUI::slot_startButtonPressed()
 {
    // Если плюсонилка не запущена - запускаем
    if(!m_is_running)
@@ -522,62 +569,38 @@ void GUI::slot_newMessage(QString msg)
 /*
  * Нажата кнопка "Принять" прокси
  */
-void GUI::slot_AcceptProxiesButtonPresed()
+void GUI::slot_acceptProxiesButtonPressed()
 {
    // Если прокси ранее не были приняты, принимаем
    if(!m_proxies_is_accepted)
    {
       m_proxylist.clear();
       m_proxylist.addFromText(ui.editor_proxies->toPlainText());
-      ui.editor_proxies->clear();
 
-      if(m_proxylist.count() > 0)
+      if(!m_proxylist.empty())
       {
-         m_proxies_is_accepted = true;
-
-         printMessage(QString("%1 прокси загружены.").arg(m_proxylist.count()), 0);
-
-         // Создаём плюсонеры
-         stopPlusoners();
-         deletePlusoners();
-         createPlusoners();
-
-         // Счётчики
+         acceptProxies();
          updateCounters();
-
-         // Блокируем элементы управления во вкладке "Прокси"
-         ui.editor_proxies->setPlainText(m_proxylist.toString());
-         ui.button_proxies_accept->setText("Очистить");
-         ui.button_proxies_from_file->setEnabled(false);
-         ui.editor_proxies->setReadOnly(true);
-         ui.spinbox_ignore_proxies->setEnabled(false);
-         ui.spinbox_max_proxies->setEnabled(false);
       }
-
-      ui.label_proxy_count->setNum(m_proxylist.count());
    }
 
    // Иначе очищаем имеющиеся прокси
    else
    {
-      m_proxies_is_accepted = false;
-      m_proxylist.clear();
+      clearProxies();
+   }
+}
 
-      // Удаляем плюсонеры
-      stopPlusoners();
-      deletePlusoners();
+void GUI::slot_loadProxiesFromFileButtonPressed()
+{
+   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", ".", "Files (*.*)");
 
-      // Счётчики
+   m_proxylist.clear();
+   m_proxylist.addFromFile(fname);
+
+   if(!m_proxylist.empty())
+   {
+      acceptProxies();
       updateCounters();
-
-      // Разблокируем элементы управления во вкладке "Прокси"
-      ui.button_proxies_accept->setText("Принять");
-      ui.button_proxies_from_file->setEnabled(true);
-      ui.editor_proxies->setReadOnly(false);
-      ui.editor_proxies->clear();
-      ui.spinbox_ignore_proxies->setEnabled(true);
-      ui.spinbox_max_proxies->setEnabled(true);
-
-      ui.label_proxy_count->setNum(m_proxylist.count());
    }
 }

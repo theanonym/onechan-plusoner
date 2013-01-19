@@ -24,6 +24,7 @@
 #include <QMessageBox>
 #include <QQueue>
 #include <QThread>
+#include <QFileDialog>
 
 #include "ui_gui.h"
 
@@ -86,17 +87,21 @@ class GUI : public QWidget
    void stopPlusoners();
    void deletePlusoners();
 
+   void acceptProxies();
+   void clearProxies();
+
 public:
    GUI(QWidget * parent = 0);
    ~GUI();
 
 private slots:
-   void slot_startButtonPresed();
+   void slot_startButtonPressed();
    void slot_threadChanged(QString);
    void slot_rateChanged(int);
    void slot_logLevelChanged(int);
    void slot_captchaEntered();
-   void slot_AcceptProxiesButtonPresed();
+   void slot_acceptProxiesButtonPressed();
+   void slot_loadProxiesFromFileButtonPressed();
 
    void slot_newMessage(QString);
    void slot_captchaRequestFinished();
