@@ -32,7 +32,6 @@ class Plusoner : public QObject
 {
    Q_OBJECT
 
-   bool m_is_running;
    int m_rate;
    int m_thread;
    bool m_need_captcha;
@@ -57,11 +56,13 @@ class Plusoner : public QObject
    void reset();
    void message(const QString &);
 
+   bool m_try_vote_is_running;
+   bool m_captcha_is_running;
+   bool m_vote_is_running;
+
 public:
    Plusoner(QObject * parent = 0);
    ~Plusoner();
-
-   inline bool isRunning() const { return m_is_running; }
 
    inline bool captchaIsSuccess() const { return m_captcha_is_succes; }
    inline bool tryVoteIsSuccess() const { return m_try_vote_is_success; }
@@ -81,7 +82,7 @@ public:
    inline QString proxyToString() const { return hasProxy() ? m_proxy.hostName() : "Без прокси"; }
 
    inline QPixmap getCaptchaImage() const { return m_captcha_image; }
-   inline bool hasCaptchaImage() const { return !m_captcha_image.isNull(); }
+   inline bool hasCaptchaImage() const { return m_has_captcha_image; }
 
    inline void setCaptchaText(const QString & text) { m_captcha_text = text; }
    inline QString getCaptchaText() const { return m_captcha_text; }

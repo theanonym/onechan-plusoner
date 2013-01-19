@@ -16,6 +16,11 @@ Plusoner::Plusoner(QObject * parent)
    m_default_request.setRawHeader("User-Agent", "Opera/9.80 (X11; Linux i686) Presto/2.12.388 Version/12.12");
    m_default_request.setRawHeader("Referer", "http://1chan.ru/");
 
+   m_has_proxy = false;
+   m_try_vote_is_running = false;
+   m_captcha_is_running  = false;
+   m_vote_is_running     = false;
+
    reset();
 }
 
@@ -29,7 +34,6 @@ Plusoner::~Plusoner()
  */
 void Plusoner::reset()
 {
-   m_is_running = false;
    m_rate = -1;
    m_thread = -1;
    m_need_captcha = false;
@@ -37,9 +41,9 @@ void Plusoner::reset()
    m_captcha_is_succes = false;
    m_try_vote_is_success = false;
    m_vote_is_success = false;
-   m_has_proxy = false;
+   m_has_captcha_image = false;
 
-   m_captcha_image = QPixmap();
+//   m_captcha_image = QPixmap();
    m_captcha_text = QString();
 }
 
@@ -48,24 +52,22 @@ void Plusoner::reset()
  */
 void Plusoner::slot_stop()
 {
-   //TODO abort() приводит к сегфолту.
+   if(m_try_vote_is_running)
+   {
+      m_try_vote_reply->abort();
+   }
 
-//   if(m_try_vote_reply && m_try_vote_reply->isRunning())
-//   {
-//      m_try_vote_reply->abort();
-//   }
+   if(m_captcha_is_running)
+   {
+      m_captcha_reply->abort();
+   }
 
-//   if(m_captcha_reply && m_captcha_reply->isRunning())
-//   {
-//      m_captcha_reply->abort();
-//   }
+   if(m_vote_is_running)
+   {
+      m_vote_reply->abort();
+   }
 
-//   if(m_vote_reply && m_vote_reply->isRunning())
-//   {
-//      m_vote_reply->abort();
-//   }
-
-//   reset();
+   reset();
 }
 
 /*
@@ -95,6 +97,7 @@ void Plusoner::slot_sendTryVoteRequest()
    // Отправка запроса
    m_try_vote_reply = m_nmanager->get(request);
    connect(m_try_vote_reply, SIGNAL(finished()), SLOT(slot_tryVoteRequestFinished()));
+   m_try_vote_is_running = true;
 }
 
 /*
@@ -116,6 +119,7 @@ void Plusoner::slot_sendCaptchaRequest()
    // Отправка запроса
    m_captcha_reply = m_nmanager->get(request);
    connect(m_captcha_reply, SIGNAL(finished()), SLOT(slot_captchaRequestFinished()));
+   m_captcha_is_running = true;
 }
 
 /*
@@ -141,6 +145,7 @@ void Plusoner::slot_sendVoteRequest()
    // Отправка запроса
    m_vote_reply = m_nmanager->post(request, content);
    connect(m_vote_reply, SIGNAL(finished()), SLOT(slot_voteRequestFinished()));
+   m_vote_is_running = true;
 }
 
 
@@ -149,6 +154,8 @@ void Plusoner::slot_sendVoteRequest()
  */
 void Plusoner::slot_tryVoteRequestFinished()
 {
+   m_try_vote_is_running = false;
+
    // Получение строки статуса и контента
    int code = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
    QString status_line = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
@@ -220,6 +227,8 @@ void Plusoner::slot_tryVoteRequestFinished()
  */
 void Plusoner::slot_captchaRequestFinished()
 {
+   m_captcha_is_running = false;
+
    // Получение строки статуса и контента
    int code = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
    QString status_line = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
@@ -237,6 +246,7 @@ void Plusoner::slot_captchaRequestFinished()
 
       // Сохранение картинки в память
       m_captcha_image.loadFromData(content);
+      m_has_captcha_image = true;
    }
 
    // Ошибка соединения
@@ -262,6 +272,8 @@ void Plusoner::slot_captchaRequestFinished()
  */
 void Plusoner::slot_voteRequestFinished()
 {
+   m_vote_is_running = false;
+
    // Получение строки статуса
    int code = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
    QString status_line = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
