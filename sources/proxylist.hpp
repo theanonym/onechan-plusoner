@@ -42,8 +42,9 @@ public:
    QNetworkProxy & get(int index) { return m_proxies[index]; }
    QList<QNetworkProxy> & getAll() { return m_proxies; }
 
-   inline void clear() { m_proxies.clear(); }
+   inline void clear() { m_proxies.clear(); m_hosts.clear(); }
    inline int count() const { return m_proxies.count(); }
+   inline bool empty() const { return m_proxies.empty(); }
 };
 
 #endif // PROXYLIST_HPP
