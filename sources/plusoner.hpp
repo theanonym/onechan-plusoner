@@ -27,6 +27,7 @@
 #include <QNetworkProxy>
 #include <QPixmap>
 #include <QRegExp>
+#include <QTimer>
 
 class Plusoner : public QObject
 {
@@ -43,6 +44,7 @@ class Plusoner : public QObject
    QNetworkReply * m_try_vote_reply;
    QNetworkReply * m_vote_reply;
    QNetworkProxy m_proxy;
+   QTimer * m_timer;
 
    QPixmap m_captcha_image;
    QString m_captcha_text;
@@ -92,22 +94,23 @@ public:
 
    inline bool hasPHPSessid() const { return !m_phpsessid.isEmpty(); }
 
-signals:
-   void signal_newMessage(QString);
-   void signal_captchaRequestFinished();
-   void signal_tryVoteRequestFinished();
-   void signal_voteRequestFinished();
-
 private slots:
    void slot_captchaRequestFinished();
    void slot_tryVoteRequestFinished();
    void slot_voteRequestFinished();
+   void slot_timeout();
 
 public slots:
    void slot_stop();
    void slot_sendCaptchaRequest();
    void slot_sendTryVoteRequest();
    void slot_sendVoteRequest();
+
+signals:
+   void signal_newMessage(QString);
+   void signal_captchaRequestFinished();
+   void signal_tryVoteRequestFinished();
+   void signal_voteRequestFinished();
 };
 
 #endif // PlUSONER_HPP

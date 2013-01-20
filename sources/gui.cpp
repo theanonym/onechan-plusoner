@@ -50,6 +50,9 @@ GUI::GUI(QWidget * parent)
 GUI::~GUI()
 {
    deletePlusoners();
+
+   if(!m_proxylist.empty())
+      m_proxylist.saveToFile("_proxies.txt"); // На будущее
 }
 
 /*
@@ -245,7 +248,10 @@ void GUI::deletePlusoners()
    else
    {
       foreach(PlusonerThread * thread, m_threads)
+      {
          thread->quit();
+         thread->wait();
+      }
 
       foreach(Plusoner * plusoner, m_plusoners)
          delete plusoner;
