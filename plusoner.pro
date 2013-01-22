@@ -1,7 +1,7 @@
 QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = onechan_plusoner
+TARGET = plusoner
 
 TEMPLATE = app
 
@@ -23,4 +23,4 @@ FORMS += \
 RESOURCES += \
     resources/res.qrc
 
-RC_FILE = resources//icon.rc
+RC_FILE = resources/icon.rc
