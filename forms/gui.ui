@@ -506,7 +506,7 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если есть список из 100 прокси, указано&lt;span style=&quot; font-weight:600;&quot;&gt; пропустить &lt;/span&gt;10 и &lt;span style=&quot; font-weight:600;&quot;&gt;использовать &lt;/span&gt;20, будут использованы прокси с 11 по 31 (всего 20)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="maximum">
-                   <number>100000</number>
+                   <number>100</number>
                   </property>
                  </widget>
                 </item>
@@ -523,7 +523,7 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если есть список из 100 прокси, указано&lt;span style=&quot; font-weight:600;&quot;&gt; пропустить &lt;/span&gt;10 и &lt;span style=&quot; font-weight:600;&quot;&gt;использовать &lt;/span&gt;20, будут использованы прокси с 11 по 31 (всего 20)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="maximum">
-                   <number>100000</number>
+                   <number>100</number>
                   </property>
                  </widget>
                 </item>
