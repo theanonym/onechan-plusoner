@@ -301,7 +301,7 @@ void Plusoner::slot_voteRequestFinished()
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Vote", m_vote_reply->errorString()));
       else
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Vote", "ошибка соединения: " + status_line));
-      m_try_vote_is_success = false;
+      m_vote_is_success = false;
    }
 
    // Удаление ответа
