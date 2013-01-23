@@ -102,7 +102,9 @@ void Plusoner::slot_sendTryVoteRequest()
    m_try_vote_reply = m_nmanager->get(request);
    connect(m_try_vote_reply, SIGNAL(finished()), SLOT(slot_tryVoteRequestFinished()));
    m_try_vote_is_running = true;
+#ifndef Q_OS_WIN32
    m_timer->start(30 * 1000);
+#endif // Q_OS_WIN32
 }
 
 /*
@@ -126,7 +128,9 @@ void Plusoner::slot_sendCaptchaRequest()
    m_captcha_reply = m_nmanager->get(request);
    connect(m_captcha_reply, SIGNAL(finished()), SLOT(slot_captchaRequestFinished()));
    m_captcha_is_running = true;
+#ifndef Q_OS_WIN32
    m_timer->start(30 * 1000);
+#endif // Q_OS_WIN32
 }
 
 /*
@@ -154,7 +158,9 @@ void Plusoner::slot_sendVoteRequest()
    m_vote_reply = m_nmanager->post(request, content);
    connect(m_vote_reply, SIGNAL(finished()), SLOT(slot_voteRequestFinished()));
    m_vote_is_running = true;
+#ifndef Q_OS_WIN32
    m_timer->start(30 * 1000);
+#endif // Q_OS_WIN32
 }
 
 /*
@@ -163,7 +169,9 @@ void Plusoner::slot_sendVoteRequest()
 void Plusoner::slot_tryVoteRequestFinished()
 {
    m_try_vote_is_running = false;
-   m_timer->stop();
+
+   if(m_timer->isActive())
+      m_timer->stop();
 
    // Получение строки статуса
    int code = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -236,7 +244,9 @@ void Plusoner::slot_tryVoteRequestFinished()
 void Plusoner::slot_captchaRequestFinished()
 {
    m_captcha_is_running = false;
-   m_timer->stop();
+
+   if(m_timer->isActive())
+      m_timer->stop();
 
    // Получение строки статуса
    int code = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -253,6 +263,7 @@ void Plusoner::slot_captchaRequestFinished()
 
       // Сохранение картинки в память
       m_captcha_image.loadFromData(m_captcha_reply->readAll());
+
       m_has_captcha_image = true;
    }
 
@@ -280,7 +291,9 @@ void Plusoner::slot_captchaRequestFinished()
 void Plusoner::slot_voteRequestFinished()
 {
    m_vote_is_running = false;
-   m_timer->stop();
+
+   if(m_timer->isActive())
+      m_timer->stop();
 
    // Получение строки статуса
    int code = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

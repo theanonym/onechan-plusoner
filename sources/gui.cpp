@@ -23,7 +23,7 @@ GUI::GUI(QWidget * parent)
    /*
     * Элементы управления и сигналы в основной вкладке
     */
-   ui.line_thread->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,10}"), this));
+   ui.line_thread->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,20}"), this));
    ui.line_captcha->setEnabled(false);
    ui.tabs->setCurrentIndex(0);
    ui.line_thread->setFocus();
@@ -402,9 +402,7 @@ void GUI::slot_startButtonPressed()
       // Если капча отображается, убираем
       if(m_captcha_displayed)
       {
-         ui.label_captcha->clear();
-         ui.line_captcha->setEnabled(false);
-         m_captcha_displayed = false;
+         hideCaptcha();
       }
 
       // Останавливаем все плюсонеры
@@ -588,6 +586,10 @@ void GUI::slot_acceptProxiesButtonPressed()
          acceptProxies();
          updateCounters();
       }
+      else
+      {
+         ui.editor_proxies->clear();
+      }
    }
 
    // Иначе очищаем имеющиеся прокси
@@ -599,14 +601,11 @@ void GUI::slot_acceptProxiesButtonPressed()
 
 void GUI::slot_loadProxiesFromFileButtonPressed()
 {
-   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", ".", "Files (*.*)");
+   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", ".", "*.*");
 
-   m_proxylist.clear();
-   m_proxylist.addFromFile(fname);
-
-   if(!m_proxylist.empty())
+   QFile file(fname);
+   if(file.open(QIODevice::ReadOnly))
    {
-      acceptProxies();
-      updateCounters();
+      ui.editor_proxies->setPlainText(file.readAll());
    }
 }
