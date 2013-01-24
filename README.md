@@ -2,6 +2,9 @@
 
 Это незаконченный проект. Вы можете присоединиться и доделать его.
 
+## Загрузки
+* [Windows](https://raw.github.com/theanonym/yoba-onechan-plusoner/master/windows.zip) (у некоторых почему-то не отображается капча и в целом работает хуже, чем под линуксом)
+
 ## Как собрать
 
     $ git clone git://github.com/theanonym/yoba-onechan-plusoner.git
