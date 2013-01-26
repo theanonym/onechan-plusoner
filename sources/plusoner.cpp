@@ -103,10 +103,10 @@ void Plusoner::slot_sendTryVoteRequest()
    m_try_vote_reply = m_nmanager->get(request);
    connect(m_try_vote_reply, SIGNAL(finished()), SLOT(slot_tryVoteRequestFinished()));
    m_try_vote_is_running = true;
-#ifndef Q_OS_WIN32
+
    if(hasTimeout())
       m_timer->start(m_timeout * 1000);
-#endif // Q_OS_WIN32
+
 }
 
 /*
@@ -130,10 +130,10 @@ void Plusoner::slot_sendCaptchaRequest()
    m_captcha_reply = m_nmanager->get(request);
    connect(m_captcha_reply, SIGNAL(finished()), SLOT(slot_captchaRequestFinished()));
    m_captcha_is_running = true;
-#ifndef Q_OS_WIN32
+
    if(hasTimeout())
       m_timer->start(m_timeout * 1000);
-#endif // Q_OS_WIN32
+
 }
 
 /*
@@ -161,10 +161,10 @@ void Plusoner::slot_sendVoteRequest()
    m_vote_reply = m_nmanager->post(request, content);
    connect(m_vote_reply, SIGNAL(finished()), SLOT(slot_voteRequestFinished()));
    m_vote_is_running = true;
-#ifndef Q_OS_WIN32
+
    if(hasTimeout())
       m_timer->start(m_timeout * 1000);
-#endif // Q_OS_WIN32
+
 }
 
 /*

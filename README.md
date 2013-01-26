@@ -2,9 +2,6 @@
 
 Это незаконченный проект. Вы можете присоединиться и доделать его.
 
-## Загрузки
-* [Windows](https://raw.github.com/theanonym/yoba-onechan-plusoner/master/windows.zip) (.dll файлы в комплекте)
-
 ## Как собрать
 
     $ git clone git://github.com/theanonym/yoba-onechan-plusoner.git
