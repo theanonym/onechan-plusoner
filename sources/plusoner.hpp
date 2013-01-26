@@ -84,7 +84,7 @@ public:
    inline void setProxy(const QNetworkProxy & proxy) { m_proxy = proxy; m_has_proxy = true; m_nmanager->setProxy(m_proxy); }
    inline QNetworkProxy getProxy() const { return m_proxy; }
    inline bool hasProxy() const { return m_has_proxy; }
-   inline QString proxyToString() const { return hasProxy() ? m_proxy.hostName() : "Без прокси"; }
+   inline QString proxyToString() const { return hasProxy() ? QString("%1:%2").arg(m_proxy.hostName()).arg(m_proxy.port())  : "Без прокси"; }
 
    inline QPixmap getCaptchaImage() const { return m_captcha_image; }
    inline bool hasCaptchaImage() const { return m_has_captcha_image; }
