@@ -16,8 +16,8 @@ GUI::GUI(QWidget * parent)
    m_is_running = false;
    m_captcha_displayed = false;
    m_proxies_is_accepted = false;
-   m_loglevel = -1;
-   m_rate     = -1;
+   m_loglevel = 1;
+   m_rate     = 1;
    m_thread   = -1;
    m_attempts = -1;
    m_timeout  = -1;
@@ -62,6 +62,11 @@ GUI::~GUI()
 
    if(!m_proxylist.empty())
       m_proxylist.saveToFile("_proxies.txt"); // На будущее
+
+   QFile file("log.txt");
+   file.open(QFile::Append);
+   file.write(ui.editor_output->toPlainText().toAscii());
+   file.write("\n");
 }
 
 /*
@@ -435,7 +440,13 @@ void GUI::slot_startButtonPressed()
  */
 void GUI::slot_rateChanged(int index)
 {
-   m_rate = !index;
+   switch(index)
+   {
+      case 0: m_rate = 1; break;
+      case 1: m_rate = 0; break;
+      default: m_rate = 1;
+   }
+
    setPlusoners();
 }
 
@@ -635,7 +646,7 @@ void GUI::slot_acceptProxiesButtonPressed()
 
 void GUI::slot_loadProxiesFromFileButtonPressed()
 {
-   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", ".", "*.*");
+   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", ".");
 
    QFile file(fname);
    if(file.open(QIODevice::ReadOnly))
