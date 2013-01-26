@@ -16,33 +16,42 @@ GUI::GUI(QWidget * parent)
    m_is_running = false;
    m_captcha_displayed = false;
    m_proxies_is_accepted = false;
-   m_loglevel = 1;
-   m_rate = 1;
-   m_thread = -1;
+   m_loglevel = -1;
+   m_rate     = -1;
+   m_thread   = -1;
+   m_attempts = -1;
+   m_timeout  = -1;
 
    /*
     * Элементы управления и сигналы в основной вкладке
     */
+   connect(ui.button_start,        SIGNAL(clicked()),                   SLOT(slot_startButtonPressed()));
+   connect(ui.combobox_rate,       SIGNAL(currentIndexChanged(int)),    SLOT(slot_rateChanged(int)));
+   connect(ui.line_thread,         SIGNAL(textChanged(QString)),        SLOT(slot_threadChanged(QString)));
+   connect(ui.line_captcha,        SIGNAL(returnPressed()),             SLOT(slot_captchaEntered()));
+   connect(ui.combobox_loglevel,   SIGNAL(currentIndexChanged(int)),    SLOT(slot_logLevelChanged(int)));
+   connect(ui.button_output_clear, SIGNAL(clicked()), ui.editor_output, SLOT(clear()));
+
    ui.line_thread->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,20}"), this));
    ui.line_captcha->setEnabled(false);
    ui.tabs->setCurrentIndex(0);
    ui.line_thread->setFocus();
    ui.editor_output->setReadOnly(true);
    ui.combobox_loglevel->setCurrentIndex(0);
-
-   connect(ui.button_start,  SIGNAL(clicked()),                SLOT(slot_startButtonPressed()));
-   connect(ui.combobox_rate, SIGNAL(currentIndexChanged(int)), SLOT(slot_rateChanged(int)));
-   connect(ui.line_thread,   SIGNAL(textChanged(QString)),     SLOT(slot_threadChanged(QString)));
-   connect(ui.line_captcha,  SIGNAL(returnPressed()),          SLOT(slot_captchaEntered()));
-   connect(ui.combobox_loglevel, SIGNAL(currentIndexChanged(int)), SLOT(slot_logLevelChanged(int)));
+   ui.combobox_rate->setCurrentIndex(0);
 
    /*
     * Элементы управления и сигналы во вкладке "Прокси"
     */
-   ui.spinbox_max_proxies->setValue(50);
+   connect(ui.button_proxies_accept,    SIGNAL(clicked()),         SLOT(slot_acceptProxiesButtonPressed()));
+   connect(ui.button_proxies_from_file, SIGNAL(clicked()),         SLOT(slot_loadProxiesFromFileButtonPressed()));
+   connect(ui.spinbox_attempts,         SIGNAL(valueChanged(int)), SLOT(slot_attemptsChanged(int)));
+   connect(ui.spinbox_timeout,          SIGNAL(valueChanged(int)), SLOT(slot_timeoutChanged(int)));
 
-   connect(ui.button_proxies_accept,    SIGNAL(clicked()), SLOT(slot_acceptProxiesButtonPressed()));
-   connect(ui.button_proxies_from_file, SIGNAL(clicked()), SLOT(slot_loadProxiesFromFileButtonPressed()));
+   ui.spinbox_max_proxies->setValue(50);
+   ui.spinbox_attempts->setValue(1);
+   ui.spinbox_attempts->setEnabled(false);
+   ui.spinbox_timeout->setValue(60);
 
    printMessage("Привет.", 0);
 }
@@ -137,7 +146,7 @@ bool GUI::checkSettings()
  * Принимает картинку и строку с прокси.
  * Разблокирировка поля для ввода.
  */
-void GUI::displayCaptcha(const QPixmap & image, const QString & proxy)
+void GUI::displayCaptcha(QPixmap image, QString proxy)
 {
    printMessage("Выведена капча для " + proxy, 0);
 
@@ -222,8 +231,8 @@ void GUI::createPlusoners()
       plusoner->moveToThread(thread);
 
       // Сохранение указателей для дальнейшего использования
-      m_plusoners.push_back(plusoner);
-      m_threads.push_back(thread);
+      m_plusoners.append(plusoner);
+      m_threads.append(thread);
    }
 
    // Запуск всех потоков (вызов PlusonerThread::exec(), ни к каким действиям это не приводит)
@@ -283,6 +292,7 @@ void GUI::setPlusoners()
       {
          plusoner->setThread(m_thread);
          plusoner->setRate(m_rate);
+         plusoner->setTimeout(m_timeout);
       }
    }
 }
@@ -327,6 +337,8 @@ void GUI::acceptProxies()
    ui.editor_proxies->setReadOnly(true);
    ui.spinbox_ignore_proxies->setEnabled(false);
    ui.spinbox_max_proxies->setEnabled(false);
+//   ui.spinbox_attempts->setEnabled(false);
+   ui.spinbox_timeout->setEnabled(false);
 
    ui.label_proxy_count->setNum(m_proxylist.count());
 }
@@ -350,6 +362,8 @@ void GUI::clearProxies()
    ui.editor_proxies->clear();
    ui.spinbox_ignore_proxies->setEnabled(true);
    ui.spinbox_max_proxies->setEnabled(true);
+//   ui.spinbox_attempts->setEnabled(true);
+   ui.spinbox_timeout->setEnabled(true);
 
    ui.label_proxy_count->setNum(m_proxylist.count());
 }
@@ -434,6 +448,26 @@ void GUI::slot_threadChanged(QString thread)
       m_thread = thread.toInt();
    else
       m_thread = -1;
+
+   setPlusoners();
+}
+
+/*
+ * Изменено количество попыток
+ */
+void GUI::slot_attemptsChanged(int value)
+{
+   m_attempts = value;
+
+   setPlusoners();
+}
+
+/*
+ * Изменён таймаут
+ */
+void GUI::slot_timeoutChanged(int value)
+{
+   m_timeout = value;
 
    setPlusoners();
 }

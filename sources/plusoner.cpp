@@ -38,8 +38,9 @@ Plusoner::~Plusoner()
  */
 void Plusoner::reset()
 {
-   m_rate = -1;
-   m_thread = -1;
+   m_thread  = -1;
+   m_rate    = -1;
+   m_timeout = 0;
    m_need_captcha = false;
 
    m_captcha_is_succes = false;
@@ -103,7 +104,8 @@ void Plusoner::slot_sendTryVoteRequest()
    connect(m_try_vote_reply, SIGNAL(finished()), SLOT(slot_tryVoteRequestFinished()));
    m_try_vote_is_running = true;
 #ifndef Q_OS_WIN32
-   m_timer->start(30 * 1000);
+   if(hasTimeout())
+      m_timer->start(m_timeout * 1000);
 #endif // Q_OS_WIN32
 }
 
@@ -129,7 +131,8 @@ void Plusoner::slot_sendCaptchaRequest()
    connect(m_captcha_reply, SIGNAL(finished()), SLOT(slot_captchaRequestFinished()));
    m_captcha_is_running = true;
 #ifndef Q_OS_WIN32
-   m_timer->start(30 * 1000);
+   if(hasTimeout())
+      m_timer->start(m_timeout * 1000);
 #endif // Q_OS_WIN32
 }
 
@@ -159,7 +162,8 @@ void Plusoner::slot_sendVoteRequest()
    connect(m_vote_reply, SIGNAL(finished()), SLOT(slot_voteRequestFinished()));
    m_vote_is_running = true;
 #ifndef Q_OS_WIN32
-   m_timer->start(30 * 1000);
+   if(hasTimeout())
+      m_timer->start(m_timeout * 1000);
 #endif // Q_OS_WIN32
 }
 
@@ -175,8 +179,8 @@ void Plusoner::slot_tryVoteRequestFinished()
 
    // Получение строки статуса
    int code = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-   QString status_line = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
-                         + " " + m_try_vote_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+//   QString status_line = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
+//                         + " " + m_try_vote_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
    // Код 303 - голос принят
    if(code == 303)
@@ -215,7 +219,7 @@ void Plusoner::slot_tryVoteRequestFinished()
       // Код 200, но капчу вводить не нужно - неизвестная ошибка
       else
       {
-         message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", "неизвестная ошибка"));
+         message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", m_try_vote_reply->errorString()));
          m_try_vote_is_success = false;
       }
    }
@@ -226,7 +230,7 @@ void Plusoner::slot_tryVoteRequestFinished()
       if(m_try_vote_reply->error() != QNetworkReply::NoError)
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", m_try_vote_reply->errorString()));
       else
-         message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", "ошибка соединения: " + status_line));
+         message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", "ошибка соединения: "));
       m_try_vote_is_success = false;
    }
 
@@ -250,8 +254,8 @@ void Plusoner::slot_captchaRequestFinished()
 
    // Получение строки статуса
    int code = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-   QString status_line = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
-                         + " " + m_captcha_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+//   QString status_line = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
+//                         + " " + m_captcha_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
    // Код 200 и Content-Type image/* - успешный запрос капчи
    if(code == 200 && m_captcha_reply->header(QNetworkRequest::ContentTypeHeader).toString().indexOf(QRegExp("image/\\w+")) != -1)
@@ -273,7 +277,7 @@ void Plusoner::slot_captchaRequestFinished()
       if(m_captcha_reply->error() != QNetworkReply::NoError)
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Get captcha", m_captcha_reply->errorString()));
       else
-         message(QString("[%2] [%1] %3").arg(proxyToString(), "Get captcha", "ошибка соединения: " + status_line));
+         message(QString("[%2] [%1] %3").arg(proxyToString(), "Get captcha", "ошибка соединения: "));
       m_captcha_is_succes = false;
    }
 
@@ -297,8 +301,8 @@ void Plusoner::slot_voteRequestFinished()
 
    // Получение строки статуса
    int code = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-   QString status_line = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
-                         + " " + m_vote_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+//   QString status_line = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
+//                         + " " + m_vote_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
    // Код 303 - голос принят
    if(code == 303)
@@ -313,7 +317,7 @@ void Plusoner::slot_voteRequestFinished()
       if(m_vote_reply->error() != QNetworkReply::NoError)
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Vote", m_vote_reply->errorString()));
       else
-         message(QString("[%2] [%1] %3").arg(proxyToString(), "Vote", "ошибка соединения: " + status_line));
+         message(QString("[%2] [%1] %3").arg(proxyToString(), "Vote", "ошибка соединения: "));
       m_vote_is_success = false;
    }
 

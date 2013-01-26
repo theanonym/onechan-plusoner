@@ -35,6 +35,7 @@ class Plusoner : public QObject
 
    int m_rate;
    int m_thread;
+   int m_timeout;
    bool m_need_captcha;
    QString m_phpsessid;
 
@@ -69,6 +70,8 @@ public:
    inline bool captchaIsSuccess() const { return m_captcha_is_succes; }
    inline bool tryVoteIsSuccess() const { return m_try_vote_is_success; }
    inline bool voteIsSuccess() const { return m_vote_is_success; }
+   inline bool needCaptcha() const { return m_need_captcha; }
+   inline bool hasPHPSessid() const { return !m_phpsessid.isEmpty(); }
 
    inline void setRate(int rate) { m_rate = rate; }
    inline int getRate() const { return m_rate; }
@@ -90,9 +93,9 @@ public:
    inline QString getCaptchaText() const { return m_captcha_text; }
    inline bool hasCaptchaText() const { return !m_captcha_text.isEmpty(); }
 
-   inline bool needCaptcha() const { return m_need_captcha; }
-
-   inline bool hasPHPSessid() const { return !m_phpsessid.isEmpty(); }
+   inline void setTimeout(int timeout) { m_timeout = timeout; }
+   inline int  getTimeout() const      { return m_timeout; }
+   inline bool hasTimeout() const      { return m_timeout != 0; }
 
 private slots:
    void slot_captchaRequestFinished();

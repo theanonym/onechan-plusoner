@@ -72,6 +72,8 @@ class GUI : public QWidget
    int  m_loglevel;
    int  m_rate;
    int  m_thread;
+   int  m_attempts;
+   int  m_timeout;
 
    void printMessage(const QString &, int);
 
@@ -79,7 +81,7 @@ class GUI : public QWidget
    void disableGUI();
    bool checkSettings();
    void updateCounters();
-   void displayCaptcha(const QPixmap &, const QString &);
+   void displayCaptcha(QPixmap, QString);
    void hideCaptcha();
 
    void createPlusoners();
@@ -98,6 +100,8 @@ private slots:
    void slot_startButtonPressed();
    void slot_threadChanged(QString);
    void slot_rateChanged(int);
+   void slot_attemptsChanged(int);
+   void slot_timeoutChanged(int);
    void slot_logLevelChanged(int);
    void slot_captchaEntered();
    void slot_acceptProxiesButtonPressed();

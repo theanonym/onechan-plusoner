@@ -29,8 +29,8 @@ bool Proxylist::add(const QNetworkProxy & proxy)
 
    if(!m_hosts.contains(host))
    {
-      m_hosts.push_back(host);
-      m_proxies.push_back(proxy);
+      m_hosts.append(host);
+      m_proxies.append(proxy);
       return true;
    }
    else
