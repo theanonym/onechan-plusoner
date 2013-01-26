@@ -11,7 +11,8 @@
 Plusoner::Plusoner(QObject * parent)
    : QObject(parent)
 {
-   m_nmanager = new QNetworkAccessManager(this);
+   m_nmanager = new YobaNetworkManager(this);
+//   if(!m_nmanager->loadCookiesFromFile())
 
    m_timer = new QTimer(this);
    m_timer->setSingleShot(true);
@@ -50,6 +51,22 @@ void Plusoner::reset()
 
 //   m_captcha_image = QPixmap();
    m_captcha_text = QString();
+}
+
+void Plusoner::setProxy(const QNetworkProxy & proxy)
+{
+   m_proxy = proxy;
+   m_has_proxy = true;
+   m_nmanager->setProxy(m_proxy);
+
+   m_cookie_file = QDir(QApplication::applicationDirPath()).filePath(QString("cookies%1%2.cookie").arg(QDir::separator()).arg(m_proxy.hostName()));
+   if(!m_nmanager->loadCookiesFromFile(m_cookie_file))
+      qDebug() << "[Warning] не удалось загрузить куки из файла:" << m_cookie_file;
+}
+
+QString Plusoner::proxyToString() const
+{
+   return hasProxy() ? QString("%1:%2").arg(m_proxy.hostName()).arg(m_proxy.port())  : "Без прокси";
 }
 
 /*
@@ -206,13 +223,20 @@ void Plusoner::slot_tryVoteRequestFinished()
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", "нужна капча"));
 
          // Сохраняем печеньку
-         foreach(const QNetworkCookie & cookie, m_nmanager->cookieJar()->cookiesForUrl(QUrl("http://1chan.ru")))
+         foreach(const QNetworkCookie & cookie, m_nmanager->_cookieJar()->cookiesForUrl(QUrl("http://1chan.ru")))
          {
             if(cookie.name() == "PHPSESSID")
             {
                m_phpsessid = cookie.value();
                break;
             }
+         }
+
+         // Сохранение куки для этой прокси в файл
+         if(hasPHPSessid() && hasProxy())
+         {
+            if(!m_nmanager->saveCookiesToFile(m_cookie_file))
+               qDebug() << "[Warning] не удалось сохранить куки в файл:" << m_cookie_file;
          }
       }
 

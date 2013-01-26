@@ -28,6 +28,10 @@
 #include <QPixmap>
 #include <QRegExp>
 #include <QTimer>
+#include <QDir>
+#include <QApplication>
+
+#include "yobanetworkmanager.hpp"
 
 class Plusoner : public QObject
 {
@@ -39,7 +43,7 @@ class Plusoner : public QObject
    bool m_need_captcha;
    QString m_phpsessid;
 
-   QNetworkAccessManager * m_nmanager;
+   YobaNetworkManager * m_nmanager;
    QNetworkRequest m_default_request;
    QNetworkReply * m_captcha_reply;
    QNetworkReply * m_try_vote_reply;
@@ -63,6 +67,8 @@ class Plusoner : public QObject
    bool m_captcha_is_running;
    bool m_vote_is_running;
 
+   QString m_cookie_file;
+
 public:
    Plusoner(QObject * parent = 0);
    ~Plusoner();
@@ -81,10 +87,10 @@ public:
    inline int getThread() const { return m_thread; }
    inline bool hasThread() const { return m_thread != -1; }
 
-   inline void setProxy(const QNetworkProxy & proxy) { m_proxy = proxy; m_has_proxy = true; m_nmanager->setProxy(m_proxy); }
+   void setProxy(const QNetworkProxy &);
    inline QNetworkProxy getProxy() const { return m_proxy; }
    inline bool hasProxy() const { return m_has_proxy; }
-   inline QString proxyToString() const { return hasProxy() ? QString("%1:%2").arg(m_proxy.hostName()).arg(m_proxy.port())  : "Без прокси"; }
+   QString proxyToString() const;
 
    inline QPixmap getCaptchaImage() const { return m_captcha_image; }
    inline bool hasCaptchaImage() const { return m_has_captcha_image; }

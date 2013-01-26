@@ -31,7 +31,7 @@ public:
    PlusonerThread(QObject * parent = 0);
    ~PlusonerThread();
 
-   void setPlusoner(Plusoner *);
+   inline void setPlusoner(Plusoner * plusoner) { m_plusoner = plusoner; }
    inline Plusoner * getPlusoner() { return m_plusoner; }
 };
 

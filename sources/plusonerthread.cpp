@@ -23,8 +23,3 @@ void PlusonerThread::run()
 {
    exec();
 }
-
-void PlusonerThread::setPlusoner(Plusoner * plusoner)
-{
-   m_plusoner = plusoner;
-}
