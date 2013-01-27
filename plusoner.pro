@@ -10,14 +10,14 @@ SOURCES += main.cpp\
     sources/plusonerthread.cpp \
     sources/proxylist.cpp \
     sources/gui.cpp \
-    sources/yobanetworkmanager.cpp
+    sources/yobadb.cpp
 
 HEADERS += \
     sources/plusoner.hpp \
     sources/plusonerthread.hpp \
     sources/proxylist.hpp \
     sources/gui.hpp \
-    sources/yobanetworkmanager.hpp
+    sources/yobadb.hpp
 
 FORMS += \
     forms/gui.ui

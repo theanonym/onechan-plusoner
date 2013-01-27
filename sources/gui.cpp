@@ -53,20 +53,28 @@ GUI::GUI(QWidget * parent)
    ui.spinbox_attempts->setEnabled(false);
    ui.spinbox_timeout->setValue(60);
 
-   printMessage("Привет.", 0);
+   // Загрузка базы с куками
+   m_cookies_db_file = QDir(QApplication::applicationDirPath()).filePath("cookies.ydb");
+   m_cookies_db.setFileName(m_cookies_db_file);
+   if(m_cookies_db.loadFromFile())
+      printMessage(QString("%1 куки загружены из 'cookies.ydb'").arg(m_cookies_db.size()), 0);
 }
 
 GUI::~GUI()
 {
    deletePlusoners();
 
-   if(!m_proxylist.empty())
+   if(!m_proxylist.isEmpty())
       m_proxylist.saveToFile("_proxies.txt"); // На будущее
 
-   QFile file("log.txt");
-   file.open(QFile::Append);
-   file.write(ui.editor_output->toPlainText().toAscii());
-   file.write("\n");
+   // Сохранение базы с куками
+   if(!m_cookies_db.isEmpty())
+   {
+      if(m_cookies_db.saveToFile())
+         qDebug() << "[Info] куки сохранены на диск";
+      else
+         qDebug() << "[Error] не удалось сохранить куки на диск";
+   }
 }
 
 /*
@@ -225,7 +233,12 @@ void GUI::createPlusoners()
       Plusoner * plusoner = new Plusoner();
       plusoner->setProxy(proxy);
 
+      // Получение куки из базы, если есть
+      if(m_cookies_db.contains(proxy.hostName()))
+         plusoner->setCookies(m_cookies_db.get(proxy.hostName()));
+
       connect(plusoner, SIGNAL(signal_newMessage(QString)),      SLOT(slot_newMessage(QString)));
+      connect(plusoner, SIGNAL(signal_newCookie(QString, QString)), SLOT(slot_newCookie(QString, QString)));
       connect(plusoner, SIGNAL(signal_captchaRequestFinished()), SLOT(slot_captchaRequestFinished()));
       connect(plusoner, SIGNAL(signal_tryVoteRequestFinished()), SLOT(slot_tryVoteRequestFinished()));
       connect(plusoner, SIGNAL(signal_voteRequestFinished()),    SLOT(slot_voteRequestFinished()));
@@ -616,6 +629,14 @@ void GUI::slot_newMessage(QString msg)
 }
 
 /*
+ * Один из плюсонеров получил куки
+ */
+void GUI::slot_newCookie(QString proxy, QString raw_cookies)
+{
+   m_cookies_db.insert(proxy, raw_cookies);
+}
+
+/*
  * Нажата кнопка "Принять" прокси
  */
 void GUI::slot_acceptProxiesButtonPressed()
@@ -626,7 +647,7 @@ void GUI::slot_acceptProxiesButtonPressed()
       m_proxylist.clear();
       m_proxylist.addFromText(ui.editor_proxies->toPlainText());
 
-      if(!m_proxylist.empty())
+      if(!m_proxylist.isEmpty())
       {
          acceptProxies();
          updateCounters();

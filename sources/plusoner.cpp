@@ -11,8 +11,7 @@
 Plusoner::Plusoner(QObject * parent)
    : QObject(parent)
 {
-   m_nmanager = new YobaNetworkManager(this);
-//   if(!m_nmanager->loadCookiesFromFile())
+   m_nmanager = new QNetworkAccessManager(this);
 
    m_timer = new QTimer(this);
    m_timer->setSingleShot(true);
@@ -58,15 +57,19 @@ void Plusoner::setProxy(const QNetworkProxy & proxy)
    m_proxy = proxy;
    m_has_proxy = true;
    m_nmanager->setProxy(m_proxy);
-
-   m_cookie_file = QDir(QApplication::applicationDirPath()).filePath(QString("cookies%1%2.cookie").arg(QDir::separator()).arg(m_proxy.hostName()));
-   if(!m_nmanager->loadCookiesFromFile(m_cookie_file))
-      qDebug() << "[Warning] не удалось загрузить куки из файла:" << m_cookie_file;
 }
 
 QString Plusoner::proxyToString() const
 {
    return hasProxy() ? QString("%1:%2").arg(m_proxy.hostName()).arg(m_proxy.port())  : "Без прокси";
+}
+
+/*
+ * Установка куки (из текста заголовков)
+ */
+void Plusoner::setCookies(const QString & text)
+{
+   m_nmanager->cookieJar()->setCookiesFromUrl(QNetworkCookie::parseCookies(text.toAscii()), QUrl("http://1chan.ru"));
 }
 
 /*
@@ -194,10 +197,8 @@ void Plusoner::slot_tryVoteRequestFinished()
    if(m_timer->isActive())
       m_timer->stop();
 
-   // Получение строки статуса
+   // Получение кода ответа
    int code = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-//   QString status_line = m_try_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
-//                         + " " + m_try_vote_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
    // Код 303 - голос принят
    if(code == 303)
@@ -222,22 +223,22 @@ void Plusoner::slot_tryVoteRequestFinished()
          // Сообщение в лог
          message(QString("[%2] [%1] %3").arg(proxyToString(), "Try vote", "нужна капча"));
 
-         // Сохраняем печеньку
-         foreach(const QNetworkCookie & cookie, m_nmanager->_cookieJar()->cookiesForUrl(QUrl("http://1chan.ru")))
+         // Обработка печенек
+         QString raw_cookies;
+         foreach(const QNetworkCookie & cookie, m_nmanager->cookieJar()->cookiesForUrl(QUrl("http://1chan.ru")))
          {
+            raw_cookies.append(cookie.toRawForm());
+            raw_cookies.append('\n');
+
             if(cookie.name() == "PHPSESSID")
             {
                m_phpsessid = cookie.value();
-               break;
             }
          }
 
-         // Сохранение куки для этой прокси в файл
-         if(hasPHPSessid() && hasProxy())
-         {
-            if(!m_nmanager->saveCookiesToFile(m_cookie_file))
-               qDebug() << "[Warning] не удалось сохранить куки в файл:" << m_cookie_file;
-         }
+         // Отправка сигнала гую, чтобы он добавил куки в базу
+         if(hasPHPSessid() && hasProxy() && !raw_cookies.isEmpty())
+            emit signal_newCookie(m_proxy.hostName(), raw_cookies);
       }
 
       // Код 200, но капчу вводить не нужно - неизвестная ошибка
@@ -276,10 +277,8 @@ void Plusoner::slot_captchaRequestFinished()
    if(m_timer->isActive())
       m_timer->stop();
 
-   // Получение строки статуса
+   // Получение кода ответа
    int code = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-//   QString status_line = m_captcha_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
-//                         + " " + m_captcha_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
    // Код 200 и Content-Type image/* - успешный запрос капчи
    if(code == 200 && m_captcha_reply->header(QNetworkRequest::ContentTypeHeader).toString().indexOf(QRegExp("image/\\w+")) != -1)
@@ -323,10 +322,8 @@ void Plusoner::slot_voteRequestFinished()
    if(m_timer->isActive())
       m_timer->stop();
 
-   // Получение строки статуса
+   // Получение кода ответа
    int code = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-//   QString status_line = m_vote_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toString()
-//                         + " " + m_vote_reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 
    // Код 303 - голос принят
    if(code == 303)

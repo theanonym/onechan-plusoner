@@ -31,6 +31,7 @@
 #include "plusoner.hpp"
 #include "plusonerthread.hpp"
 #include "proxylist.hpp"
+#include "yobadb.hpp"
 
 struct Counters
 {
@@ -65,6 +66,9 @@ class GUI : public QWidget
    Proxylist              m_proxylist;
 
    Counters m_counters;
+
+   YobaDB m_cookies_db;
+   QString m_cookies_db_file;
 
    bool m_is_running;
    bool m_captcha_displayed;
@@ -108,6 +112,7 @@ private slots:
    void slot_loadProxiesFromFileButtonPressed();
 
    void slot_newMessage(QString);
+   void slot_newCookie(QString, QString);
    void slot_captchaRequestFinished();
    void slot_tryVoteRequestFinished();
    void slot_voteRequestFinished();

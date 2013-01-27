@@ -44,7 +44,7 @@ public:
 
    inline void clear() { m_proxies.clear(); m_hosts.clear(); }
    inline int count() const { return m_proxies.count(); }
-   inline bool empty() const { return m_proxies.empty(); }
+   inline bool isEmpty() const { return m_proxies.isEmpty(); }
 };
 
 #endif // PROXYLIST_HPP

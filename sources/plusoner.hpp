@@ -31,8 +31,6 @@
 #include <QDir>
 #include <QApplication>
 
-#include "yobanetworkmanager.hpp"
-
 class Plusoner : public QObject
 {
    Q_OBJECT
@@ -43,7 +41,7 @@ class Plusoner : public QObject
    bool m_need_captcha;
    QString m_phpsessid;
 
-   YobaNetworkManager * m_nmanager;
+   QNetworkAccessManager * m_nmanager;
    QNetworkRequest m_default_request;
    QNetworkReply * m_captcha_reply;
    QNetworkReply * m_try_vote_reply;
@@ -103,6 +101,8 @@ public:
    inline int  getTimeout() const      { return m_timeout; }
    inline bool hasTimeout() const      { return m_timeout != 0; }
 
+   void setCookies(const QString &);
+
 private slots:
    void slot_captchaRequestFinished();
    void slot_tryVoteRequestFinished();
@@ -117,6 +117,7 @@ public slots:
 
 signals:
    void signal_newMessage(QString);
+   void signal_newCookie(QString, QString);
    void signal_captchaRequestFinished();
    void signal_tryVoteRequestFinished();
    void signal_voteRequestFinished();
