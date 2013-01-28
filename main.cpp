@@ -8,7 +8,6 @@
 
 #include <QApplication>
 #include <QTextCodec>
-#include <QDir>
 
 #include "sources/gui.hpp"
 

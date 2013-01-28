@@ -38,8 +38,18 @@ class Plusoner : public QObject
    int m_rate;
    int m_thread;
    int m_timeout;
+   int m_attempts;
    bool m_need_captcha;
    QString m_phpsessid;
+
+   bool m_try_vote_is_running;
+   bool m_captcha_is_running;
+   bool m_vote_is_running;
+   bool m_captcha_is_succes;
+   bool m_try_vote_is_success;
+   bool m_vote_is_success;
+   bool m_has_proxy;
+   bool m_is_timeout;
 
    QNetworkAccessManager * m_nmanager;
    QNetworkRequest m_default_request;
@@ -52,18 +62,8 @@ class Plusoner : public QObject
    QPixmap m_captcha_image;
    QString m_captcha_text;
 
-   bool m_captcha_is_succes;
-   bool m_try_vote_is_success;
-   bool m_vote_is_success;
-   bool m_has_proxy;
-   bool m_has_captcha_image;
-
    void reset();
    void message(const QString &);
-
-   bool m_try_vote_is_running;
-   bool m_captcha_is_running;
-   bool m_vote_is_running;
 
    QString m_cookie_file;
 
@@ -71,37 +71,40 @@ public:
    Plusoner(QObject * parent = 0);
    ~Plusoner();
 
+   void setCookies(const QString &);
+
    inline bool captchaIsSuccess() const { return m_captcha_is_succes; }
    inline bool tryVoteIsSuccess() const { return m_try_vote_is_success; }
-   inline bool voteIsSuccess() const { return m_vote_is_success; }
-   inline bool needCaptcha() const { return m_need_captcha; }
-   inline bool hasPHPSessid() const { return !m_phpsessid.isEmpty(); }
+   inline bool voteIsSuccess() const    { return m_vote_is_success; }
+   inline bool isTimeout() const        { return m_is_timeout; }
+   inline bool needCaptcha() const      { return m_need_captcha; }
+   inline bool hasPHPSessid() const     { return !m_phpsessid.isEmpty(); }
 
    inline void setRate(int rate) { m_rate = rate; }
-   inline int getRate() const { return m_rate; }
-   inline bool hasRate() const { return m_rate != -1; }
+   inline int getRate() const    { return m_rate; }
+   inline bool hasRate() const   { return m_rate != -1; }
 
    inline void setThread(int thread) { m_thread = thread; }
-   inline int getThread() const { return m_thread; }
-   inline bool hasThread() const { return m_thread != -1; }
+   inline int getThread() const      { return m_thread; }
+   inline bool hasThread() const     { return m_thread != -1; }
 
    void setProxy(const QNetworkProxy &);
    inline QNetworkProxy getProxy() const { return m_proxy; }
-   inline bool hasProxy() const { return m_has_proxy; }
+   inline bool hasProxy() const          { return m_has_proxy; }
    QString proxyToString() const;
 
    inline QPixmap getCaptchaImage() const { return m_captcha_image; }
-   inline bool hasCaptchaImage() const { return m_has_captcha_image; }
 
    inline void setCaptchaText(const QString & text) { m_captcha_text = text; }
-   inline QString getCaptchaText() const { return m_captcha_text; }
-   inline bool hasCaptchaText() const { return !m_captcha_text.isEmpty(); }
+   inline QString getCaptchaText() const            { return m_captcha_text; }
+   inline bool hasCaptchaText() const               { return !m_captcha_text.isEmpty(); }
 
    inline void setTimeout(int timeout) { m_timeout = timeout; }
    inline int  getTimeout() const      { return m_timeout; }
    inline bool hasTimeout() const      { return m_timeout != 0; }
 
-   void setCookies(const QString &);
+   inline void setAttempts(int att) { m_attempts = att; }
+   inline int hasAttempts() const   { return m_attempts != 0; }
 
 private slots:
    void slot_captchaRequestFinished();
@@ -118,9 +121,9 @@ public slots:
 signals:
    void signal_newMessage(QString);
    void signal_newCookie(QString, QString);
-   void signal_captchaRequestFinished();
-   void signal_tryVoteRequestFinished();
-   void signal_voteRequestFinished();
+   void signal_captchaRequestFinished(Plusoner *);
+   void signal_tryVoteRequestFinished(Plusoner *);
+   void signal_voteRequestFinished(Plusoner *);
 };
 
 #endif // PlUSONER_HPP

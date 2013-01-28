@@ -67,10 +67,7 @@ bool YobaDB::loadFromFile(const QString & fname)
       int pos = 0;
       while((pos = data.indexOf(regex, pos)) != -1)
       {
-         QString key   = regex.cap(1);
-         QString value = regex.cap(2);
-
-         m_db.insert(key, value);
+         m_db.insert(regex.cap(1), regex.cap(2));
 
          pos += regex.cap(0).length() + 1;
       }

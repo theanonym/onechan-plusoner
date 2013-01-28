@@ -78,6 +78,7 @@ class GUI : public QWidget
    int  m_thread;
    int  m_attempts;
    int  m_timeout;
+   int  m_max_connections;
 
    void printMessage(const QString &, int);
 
@@ -106,6 +107,7 @@ private slots:
    void slot_rateChanged(int);
    void slot_attemptsChanged(int);
    void slot_timeoutChanged(int);
+   void slot_maxConnectionsChanged(int);
    void slot_logLevelChanged(int);
    void slot_captchaEntered();
    void slot_acceptProxiesButtonPressed();
@@ -113,9 +115,9 @@ private slots:
 
    void slot_newMessage(QString);
    void slot_newCookie(QString, QString);
-   void slot_captchaRequestFinished();
-   void slot_tryVoteRequestFinished();
-   void slot_voteRequestFinished();
+   void slot_captchaRequestFinished(Plusoner *);
+   void slot_tryVoteRequestFinished(Plusoner *);
+   void slot_voteRequestFinished(Plusoner *);
 
 };
 
