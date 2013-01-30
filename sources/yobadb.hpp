@@ -13,7 +13,6 @@
 #include <QString>
 #include <QFile>
 #include <QRegExp>
-#include <QDebug>
 
 class YobaDB : public QObject
 {

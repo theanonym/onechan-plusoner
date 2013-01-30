@@ -20,7 +20,6 @@ int main(int argc, char ** argv)
    QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
 
    GUI gui;
-   QObject::connect(&gui, SIGNAL(destroyed()), &app, SLOT(quit()));
    gui.setWindowTitle("Плюсонер");
    gui.show();
 

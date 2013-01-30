@@ -1,4 +1,4 @@
-/**
+ /**
 *
 * (C) 2013 Theanonym
 *
@@ -40,8 +40,6 @@ class Plusoner : public QObject
    int m_timeout;
    int m_attempts;
    bool m_need_captcha;
-   QString m_phpsessid;
-
    bool m_try_vote_is_running;
    bool m_captcha_is_running;
    bool m_vote_is_running;
@@ -50,6 +48,9 @@ class Plusoner : public QObject
    bool m_vote_is_success;
    bool m_has_proxy;
    bool m_is_timeout;
+   QString m_phpsessid;
+   QPixmap m_captcha_image;
+   QString m_captcha_text;
 
    QNetworkAccessManager * m_nmanager;
    QNetworkRequest m_default_request;
@@ -59,13 +60,8 @@ class Plusoner : public QObject
    QNetworkProxy m_proxy;
    QTimer * m_timer;
 
-   QPixmap m_captcha_image;
-   QString m_captcha_text;
-
    void reset();
    void message(const QString &);
-
-   QString m_cookie_file;
 
 public:
    Plusoner(QObject * parent = 0);
@@ -107,23 +103,23 @@ public:
    inline int hasAttempts() const   { return m_attempts != 0; }
 
 private slots:
-   void slot_captchaRequestFinished();
-   void slot_tryVoteRequestFinished();
-   void slot_voteRequestFinished();
-   void slot_timeout();
+   void slCaptchaRequestFinished();
+   void slTryVoteRequestFinished();
+   void slVoteRequestFinished();
+   void slTimeout();
 
 public slots:
-   void slot_stop();
-   void slot_sendCaptchaRequest();
-   void slot_sendTryVoteRequest();
-   void slot_sendVoteRequest();
+   void slStop();
+   void slSendCaptchaRequest();
+   void slSendTryVoteRequest();
+   void slSendVoteRequest();
 
 signals:
-   void signal_newMessage(QString);
-   void signal_newCookie(QString, QString);
-   void signal_captchaRequestFinished(Plusoner *);
-   void signal_tryVoteRequestFinished(Plusoner *);
-   void signal_voteRequestFinished(Plusoner *);
+   void siNewMessage(QString);
+   void siNewCookie(QString, QString);
+   void siCaptchaRequestFinished(Plusoner *);
+   void siTryVoteRequestFinished(Plusoner *);
+   void siVoteRequestFinished(Plusoner *);
 };
 
 #endif // PlUSONER_HPP

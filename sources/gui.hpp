@@ -23,7 +23,6 @@
 #include <QValidator>
 #include <QMessageBox>
 #include <QQueue>
-#include <QThread>
 #include <QFileDialog>
 
 #include "ui_gui.h"
@@ -64,11 +63,9 @@ class GUI : public QWidget
    QList<PlusonerThread*> m_threads;
    QQueue<Plusoner*>      m_captcha_queue;
    Proxylist              m_proxylist;
-
    Counters m_counters;
-
-   YobaDB m_cookies_db;
-   QString m_cookies_db_file;
+   YobaDB   m_cookies_db;
+   QString  m_cookies_db_file;
 
    bool m_is_running;
    bool m_captcha_displayed;
@@ -102,22 +99,22 @@ public:
    ~GUI();
 
 private slots:
-   void slot_startButtonPressed();
-   void slot_threadChanged(QString);
-   void slot_rateChanged(int);
-   void slot_attemptsChanged(int);
-   void slot_timeoutChanged(int);
-   void slot_maxConnectionsChanged(int);
-   void slot_logLevelChanged(int);
-   void slot_captchaEntered();
-   void slot_acceptProxiesButtonPressed();
-   void slot_loadProxiesFromFileButtonPressed();
+   void slStartButtonPressed();
+   void slThreadChanged(QString);
+   void slRateChanged(int);
+   void slAttemptsChanged(int);
+   void slTimeoutChanged(int);
+   void slMaxConnectionsChanged(int);
+   void slLogLevelChanged(int);
+   void slCaptchaEntered();
+   void slAcceptProxiesButtonPressed();
+   void slLoadProxiesButtonPressed();
 
-   void slot_newMessage(QString);
-   void slot_newCookie(QString, QString);
-   void slot_captchaRequestFinished(Plusoner *);
-   void slot_tryVoteRequestFinished(Plusoner *);
-   void slot_voteRequestFinished(Plusoner *);
+   void slNewMessage(QString);
+   void slNewCookie(QString, QString);
+   void slCaptchaRequestFinished(Plusoner *);
+   void slTryVoteRequestFinished(Plusoner *);
+   void slVoteRequestFinished(Plusoner *);
 
 };
 

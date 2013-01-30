@@ -68,10 +68,8 @@ int Proxylist::addFromText(const QString & text, int max_count)
       QString capture = re_main.cap(1);
 
       capture.indexOf(re_proxy);
-      QString host = re_proxy.cap(1);
-      QString port = re_proxy.cap(2);
 
-      if(add(host, port.toInt()))
+      if(add(re_proxy.cap(1), re_proxy.cap(2).toInt()))
       {
          count++;
          if((count != -1) && count == max_count)

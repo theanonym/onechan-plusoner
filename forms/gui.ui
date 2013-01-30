@@ -455,7 +455,7 @@
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
-           <item alignment="Qt::AlignLeft">
+           <item>
             <widget class="QLabel" name="label_8">
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Проксилист&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

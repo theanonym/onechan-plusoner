@@ -26,11 +26,11 @@ GUI::GUI(QWidget * parent)
    /*
     * Элементы управления во вкладке "Основное"
     */
-   connect(ui.button_start,        SIGNAL(clicked()),                   SLOT(slot_startButtonPressed()));
-   connect(ui.combobox_rate,       SIGNAL(currentIndexChanged(int)),    SLOT(slot_rateChanged(int)));
-   connect(ui.line_thread,         SIGNAL(textChanged(QString)),        SLOT(slot_threadChanged(QString)));
-   connect(ui.line_captcha,        SIGNAL(returnPressed()),             SLOT(slot_captchaEntered()));
-   connect(ui.combobox_loglevel,   SIGNAL(currentIndexChanged(int)),    SLOT(slot_logLevelChanged(int)));
+   connect(ui.button_start,        SIGNAL(clicked()),                   SLOT(slStartButtonPressed()));
+   connect(ui.combobox_rate,       SIGNAL(currentIndexChanged(int)),    SLOT(slRateChanged(int)));
+   connect(ui.line_thread,         SIGNAL(textChanged(QString)),        SLOT(slThreadChanged(QString)));
+   connect(ui.line_captcha,        SIGNAL(returnPressed()),             SLOT(slCaptchaEntered()));
+   connect(ui.combobox_loglevel,   SIGNAL(currentIndexChanged(int)),    SLOT(slLogLevelChanged(int)));
    connect(ui.button_output_clear, SIGNAL(clicked()), ui.editor_output, SLOT(clear()));
 
    ui.line_thread->setValidator(new QRegExpValidator(QRegExp("[0-9 ]{1,20}"), this));
@@ -44,20 +44,21 @@ GUI::GUI(QWidget * parent)
    /*
     * Элементы управления и сигналы во вкладке "Прокси"
     */
-   connect(ui.button_proxies_accept,    SIGNAL(clicked()), SLOT(slot_acceptProxiesButtonPressed()));
-   connect(ui.button_proxies_from_file, SIGNAL(clicked()), SLOT(slot_loadProxiesFromFileButtonPressed()));
+   connect(ui.button_proxies_accept,    SIGNAL(clicked()), SLOT(slAcceptProxiesButtonPressed()));
+   connect(ui.button_proxies_from_file, SIGNAL(clicked()), SLOT(slLoadProxiesButtonPressed()));
 
    ui.spinbox_max_proxies->setValue(150);
 
    /*
     * Элементы управления во вкладке "Настройки"
     */
-   connect(ui.spinbox_attempts,         SIGNAL(valueChanged(int)), SLOT(slot_attemptsChanged(int)));
-   connect(ui.spinbox_timeout,          SIGNAL(valueChanged(int)), SLOT(slot_timeoutChanged(int)));
-   connect(ui.spinbox_max_connections,  SIGNAL(valueChanged(int)), SLOT(slot_maxConnectionsChanged(int)));
+   connect(ui.spinbox_attempts,         SIGNAL(valueChanged(int)), SLOT(slAttemptsChanged(int)));
+   connect(ui.spinbox_timeout,          SIGNAL(valueChanged(int)), SLOT(slTimeoutChanged(int)));
+   connect(ui.spinbox_max_connections,  SIGNAL(valueChanged(int)), SLOT(slMaxConnectionsChanged(int)));
 
    ui.spinbox_attempts->setValue(3);
    ui.spinbox_timeout->setValue(30);
+   //ui.spinbox_max_connections->setValue(50);
 
    // Загрузка базы с куками
    m_cookies_db_file = QDir(QApplication::applicationDirPath()).filePath("cookies.ydb");
@@ -105,6 +106,7 @@ void GUI::enableGUI()
    ui.button_proxies_from_file->setEnabled(true);
    ui.spinbox_attempts->setEnabled(true);
    ui.spinbox_timeout->setEnabled(true);
+   //ui.spinbox_max_connections->setEnabled(true);
 }
 
 /*
@@ -120,6 +122,7 @@ void GUI::disableGUI()
    ui.button_proxies_from_file->setEnabled(false);
    ui.spinbox_attempts->setEnabled(false);
    ui.spinbox_timeout->setEnabled(false);
+   //ui.spinbox_max_connections->setEnabled(false);
 }
 
 /*
@@ -247,11 +250,11 @@ void GUI::createPlusoners()
       if(m_cookies_db.contains(proxy.hostName()))
          plusoner->setCookies(m_cookies_db.get(proxy.hostName()));
 
-      connect(plusoner, SIGNAL(signal_newMessage(QString)),      SLOT(slot_newMessage(QString)));
-      connect(plusoner, SIGNAL(signal_newCookie(QString, QString)), SLOT(slot_newCookie(QString, QString)));
-      connect(plusoner, SIGNAL(signal_captchaRequestFinished(Plusoner *)), SLOT(slot_captchaRequestFinished(Plusoner *)));
-      connect(plusoner, SIGNAL(signal_tryVoteRequestFinished(Plusoner *)), SLOT(slot_tryVoteRequestFinished(Plusoner *)));
-      connect(plusoner, SIGNAL(signal_voteRequestFinished(Plusoner *)),    SLOT(slot_voteRequestFinished(Plusoner *)));
+      connect(plusoner, SIGNAL(siNewMessage(QString)),                SLOT(slNewMessage(QString)));
+      connect(plusoner, SIGNAL(siNewCookie(QString, QString)),        SLOT(slNewCookie(QString, QString)));
+      connect(plusoner, SIGNAL(siCaptchaRequestFinished(Plusoner *)), SLOT(slCaptchaRequestFinished(Plusoner *)));
+      connect(plusoner, SIGNAL(siTryVoteRequestFinished(Plusoner *)), SLOT(slTryVoteRequestFinished(Plusoner *)));
+      connect(plusoner, SIGNAL(siVoteRequestFinished(Plusoner *)),    SLOT(slVoteRequestFinished(Plusoner *)));
 
       // Создание нового потока для этого плюсонера
       PlusonerThread * thread = new PlusonerThread();
@@ -338,7 +341,7 @@ void GUI::stopPlusoners()
 {
    foreach(Plusoner * plusoner, m_plusoners)
    {
-      QMetaObject::invokeMethod(plusoner, "slot_stop");
+      QMetaObject::invokeMethod(plusoner, "slStop");
    }
 
    m_is_running = false;
@@ -395,7 +398,7 @@ void GUI::clearProxies()
 /*
  * Нажата кнопка старт/стоп
  */
-void GUI::slot_startButtonPressed()
+void GUI::slStartButtonPressed()
 {
    // Если плюсонилка не запущена - запускаем
    if(!m_is_running)
@@ -423,7 +426,7 @@ void GUI::slot_startButtonPressed()
       foreach(Plusoner * plusoner, m_plusoners)
       {
          plusoner->setAttempts(m_attempts);
-         QMetaObject::invokeMethod(plusoner, "slot_sendTryVoteRequest");
+         QMetaObject::invokeMethod(plusoner, "slSendTryVoteRequest");
          m_counters.waiting--;
          m_counters.try_vote++;
       }
@@ -469,7 +472,7 @@ void GUI::slot_startButtonPressed()
 /*
  * Изменён голос (плюс/минус)
  */
-void GUI::slot_rateChanged(int index)
+void GUI::slRateChanged(int index)
 {
    switch(index)
    {
@@ -484,7 +487,7 @@ void GUI::slot_rateChanged(int index)
 /*
  * Изменён тред
  */
-void GUI::slot_threadChanged(QString thread)
+void GUI::slThreadChanged(QString thread)
 {
    thread.remove(' ');
 
@@ -499,7 +502,7 @@ void GUI::slot_threadChanged(QString thread)
 /*
  * Изменено количество попыток
  */
-void GUI::slot_attemptsChanged(int value)
+void GUI::slAttemptsChanged(int value)
 {
    m_attempts = value;
 
@@ -509,7 +512,7 @@ void GUI::slot_attemptsChanged(int value)
 /*
  * Изменён таймаут
  */
-void GUI::slot_timeoutChanged(int value)
+void GUI::slTimeoutChanged(int value)
 {
    m_timeout = value;
 
@@ -519,15 +522,15 @@ void GUI::slot_timeoutChanged(int value)
 /*
  * Изменён лимит соединений
  */
-void GUI::slot_maxConnectionsChanged(int value)
+void GUI::slMaxConnectionsChanged(int value)
 {
-   m_max_connections = value;
+   Q_UNUSED(value);
 }
 
 /*
  * Изменён уровень вывода сообщений
  */
-void GUI::slot_logLevelChanged(int index)
+void GUI::slLogLevelChanged(int index)
 {
    switch(index)
    {
@@ -540,7 +543,7 @@ void GUI::slot_logLevelChanged(int index)
 /*
  * Введён текст капчи
  */
-void GUI::slot_captchaEntered()
+void GUI::slCaptchaEntered()
 {
    // Получаем текст капчи
    QString text = ui.line_captcha->text();
@@ -554,7 +557,7 @@ void GUI::slot_captchaEntered()
       Plusoner * plusoner = m_captcha_queue.dequeue();
       plusoner->setCaptchaText(text);
       plusoner->setAttempts(m_attempts);
-      QMetaObject::invokeMethod(plusoner, "slot_sendVoteRequest");
+      QMetaObject::invokeMethod(plusoner, "slSendVoteRequest");
 
       // Счётчики
       m_counters.enter--;
@@ -579,7 +582,7 @@ void GUI::slot_captchaEntered()
 /*
  * Один из плюсонеров завершил голосование без капчи
  */
-void GUI::slot_tryVoteRequestFinished(Plusoner * plusoner)
+void GUI::slTryVoteRequestFinished(Plusoner * plusoner)
 {
    // Успешно
    if(plusoner->tryVoteIsSuccess())
@@ -593,7 +596,7 @@ void GUI::slot_tryVoteRequestFinished(Plusoner * plusoner)
    {
       // Отправляем запрос капчи
       plusoner->setAttempts(m_attempts);
-      QMetaObject::invokeMethod(plusoner, "slot_sendCaptchaRequest");
+      QMetaObject::invokeMethod(plusoner, "slSendCaptchaRequest");
 
       m_counters.try_vote--;
       m_counters.captcha++;
@@ -603,7 +606,7 @@ void GUI::slot_tryVoteRequestFinished(Plusoner * plusoner)
    else if(plusoner->hasAttempts())
    {
       // Отправляем повторный запрос
-      QMetaObject::invokeMethod(plusoner, "slot_sendTryVoteRequest");
+      QMetaObject::invokeMethod(plusoner, "slSendTryVoteRequest");
    }
 
    // Неудача, попыток не осталось
@@ -623,7 +626,7 @@ void GUI::slot_tryVoteRequestFinished(Plusoner * plusoner)
 /*
  * Один из плюсонеров завершил запрос капчи
  */
-void GUI::slot_captchaRequestFinished(Plusoner * plusoner)
+void GUI::slCaptchaRequestFinished(Plusoner * plusoner)
 {
    // Успешно
    if(plusoner->captchaIsSuccess())
@@ -644,7 +647,7 @@ void GUI::slot_captchaRequestFinished(Plusoner * plusoner)
    else if(plusoner->hasAttempts())
    {
       // Отправляем повторный запрос
-      QMetaObject::invokeMethod(plusoner, "slot_sendCaptchaRequest");
+      QMetaObject::invokeMethod(plusoner, "slSendCaptchaRequest");
    }
 
    // Неудача, попыток не осталось
@@ -664,7 +667,7 @@ void GUI::slot_captchaRequestFinished(Plusoner * plusoner)
 /*
  * Один из плюсонеров завершил голосование с капчей
  */
-void GUI::slot_voteRequestFinished(Plusoner * plusoner)
+void GUI::slVoteRequestFinished(Plusoner * plusoner)
 {
    // Успешно
    if(plusoner->voteIsSuccess())
@@ -677,7 +680,7 @@ void GUI::slot_voteRequestFinished(Plusoner * plusoner)
    else if(plusoner->hasAttempts())
    {
       // Отправляем повторный запрос
-      QMetaObject::invokeMethod(plusoner, "slot_sendVoteRequest");
+      QMetaObject::invokeMethod(plusoner, "slSendVoteRequest");
    }
 
    // Неудача, попыток не осталось
@@ -697,7 +700,7 @@ void GUI::slot_voteRequestFinished(Plusoner * plusoner)
 /*
  * Один из плюсонеров прислал сообщение
  */
-void GUI::slot_newMessage(QString msg)
+void GUI::slNewMessage(QString msg)
 {
    printMessage(msg, 1);
 }
@@ -705,7 +708,7 @@ void GUI::slot_newMessage(QString msg)
 /*
  * Один из плюсонеров получил куки
  */
-void GUI::slot_newCookie(QString proxy, QString raw_cookies)
+void GUI::slNewCookie(QString proxy, QString raw_cookies)
 {
    m_cookies_db.insert(proxy, raw_cookies);
 }
@@ -713,7 +716,7 @@ void GUI::slot_newCookie(QString proxy, QString raw_cookies)
 /*
  * Нажата кнопка "Принять" прокси
  */
-void GUI::slot_acceptProxiesButtonPressed()
+void GUI::slAcceptProxiesButtonPressed()
 {
    // Если прокси ранее не были приняты, принимаем
    if(!m_proxies_is_accepted)
@@ -739,16 +742,14 @@ void GUI::slot_acceptProxiesButtonPressed()
    }
 }
 
-void GUI::slot_loadProxiesFromFileButtonPressed()
+void GUI::slLoadProxiesButtonPressed()
 {
-   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", ".");
+   QString fname = QFileDialog::getOpenFileName(this, "Окрыть файл", QApplication::applicationDirPath());
 
    if(fname.isEmpty())
       return;
 
    QFile file(fname);
    if(file.open(QIODevice::ReadOnly))
-   {
       ui.editor_proxies->setPlainText(file.readAll());
-   }
 }

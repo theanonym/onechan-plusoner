@@ -15,7 +15,7 @@ Plusoner::Plusoner(QObject * parent)
 
    m_timer = new QTimer(this);
    m_timer->setSingleShot(true);
-   connect(m_timer, SIGNAL(timeout()), SLOT(slot_timeout()));
+   connect(m_timer, SIGNAL(timeout()), SLOT(slTimeout()));
 
    m_default_request.setRawHeader("User-Agent", "Opera/9.80 (X11; Linux i686) Presto/2.12.388 Version/12.12");
    m_default_request.setRawHeader("Referer", "http://1chan.ru/");
@@ -78,13 +78,13 @@ void Plusoner::setCookies(const QString & text)
  */
 void Plusoner::message(const QString & text)
 {
-   emit signal_newMessage(text);
+   emit siNewMessage(text);
 }
 
 /*
  * Остановка работы.
  */
-void Plusoner::slot_stop()
+void Plusoner::slStop()
 {
    if(m_try_vote_is_running)
       m_try_vote_reply->abort();
@@ -101,7 +101,7 @@ void Plusoner::slot_stop()
 /*
  * Отправка голоса (без капчи)
  */
-void Plusoner::slot_sendTryVoteRequest()
+void Plusoner::slSendTryVoteRequest()
 {
    Q_ASSERT(hasThread());
    Q_ASSERT(hasRate());
@@ -116,7 +116,7 @@ void Plusoner::slot_sendTryVoteRequest()
 
    // Отправка запроса
    m_try_vote_reply = m_nmanager->get(request);
-   connect(m_try_vote_reply, SIGNAL(finished()), SLOT(slot_tryVoteRequestFinished()));
+   connect(m_try_vote_reply, SIGNAL(finished()), SLOT(slTryVoteRequestFinished()));
    m_try_vote_is_running = true;
 
    // Запуск таймера
@@ -130,7 +130,7 @@ void Plusoner::slot_sendTryVoteRequest()
 /*
  * Запрос капчи
  */
-void Plusoner::slot_sendCaptchaRequest()
+void Plusoner::slSendCaptchaRequest()
 {
    Q_ASSERT(hasThread());
    Q_ASSERT(hasRate());
@@ -146,7 +146,7 @@ void Plusoner::slot_sendCaptchaRequest()
 
    // Отправка запроса
    m_captcha_reply = m_nmanager->get(request);
-   connect(m_captcha_reply, SIGNAL(finished()), SLOT(slot_captchaRequestFinished()));
+   connect(m_captcha_reply, SIGNAL(finished()), SLOT(slCaptchaRequestFinished()));
    m_captcha_is_running = true;
 
    // Запуск таймера
@@ -160,7 +160,7 @@ void Plusoner::slot_sendCaptchaRequest()
 /*
  * Отправка голоса (с капчей)
  */
-void Plusoner::slot_sendVoteRequest()
+void Plusoner::slSendVoteRequest()
 {
    Q_ASSERT(hasThread());
    Q_ASSERT(hasRate());
@@ -180,7 +180,7 @@ void Plusoner::slot_sendVoteRequest()
 
    // Отправка запроса
    m_vote_reply = m_nmanager->post(request, content);
-   connect(m_vote_reply, SIGNAL(finished()), SLOT(slot_voteRequestFinished()));
+   connect(m_vote_reply, SIGNAL(finished()), SLOT(slVoteRequestFinished()));
    m_vote_is_running = true;
 
    // Запуск таймера
@@ -194,7 +194,7 @@ void Plusoner::slot_sendVoteRequest()
 /*
  * Обработка ответа на попытку проголосовать без капчи
  */
-void Plusoner::slot_tryVoteRequestFinished()
+void Plusoner::slTryVoteRequestFinished()
 {
    m_try_vote_is_running = false;
 
@@ -244,7 +244,7 @@ void Plusoner::slot_tryVoteRequestFinished()
 
             // Отправка сигнала гую, чтобы он добавил куки в базу
             if(hasPHPSessid() && hasProxy() && !raw_cookies.isEmpty())
-               emit signal_newCookie(m_proxy.hostName(), raw_cookies);
+               emit siNewCookie(m_proxy.hostName(), raw_cookies);
          }
 
          // Код 200, но капчу вводить не нужно - неизвестная ошибка
@@ -281,13 +281,13 @@ void Plusoner::slot_tryVoteRequestFinished()
    m_try_vote_reply->deleteLater();
 
    // Отправка сигнала гую
-   emit signal_tryVoteRequestFinished(this);
+   emit siTryVoteRequestFinished(this);
 }
 
 /*
  * Обработка ответа на запрос капчи
  */
-void Plusoner::slot_captchaRequestFinished()
+void Plusoner::slCaptchaRequestFinished()
 {
    m_captcha_is_running = false;
 
@@ -339,13 +339,13 @@ void Plusoner::slot_captchaRequestFinished()
    m_captcha_reply->deleteLater();
 
    // Отправка сигнала гую
-   emit signal_captchaRequestFinished(this);
+   emit siCaptchaRequestFinished(this);
 }
 
 /*
  * Обработка ответа на попытку проголосовать с капчей
  */
-void Plusoner::slot_voteRequestFinished()
+void Plusoner::slVoteRequestFinished()
 {
    m_vote_is_running = false;
 
@@ -392,14 +392,14 @@ void Plusoner::slot_voteRequestFinished()
    m_vote_reply->deleteLater();
 
    // Отправка сигнала гую
-   emit signal_voteRequestFinished(this);
+   emit siVoteRequestFinished(this);
 }
 
 /*
  * Истекло время, отведённое соединению
  */
-void Plusoner::slot_timeout()
+void Plusoner::slTimeout()
 {
    m_is_timeout = true;
-   slot_stop();
+   slStop();
 }
