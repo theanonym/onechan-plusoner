@@ -1,6 +1,9 @@
 ![Скриншот](https://github.com/theanonym/onechan-plusoner/raw/master/screenshot.png)
 
-## Как собрать
+## Загрузки
+* [Windows](https://raw.github.com/theanonym/onechan-plusoner/master/windows.zip)
+
+## Как собрать для линукса
 Для сборки понадобятся пакеты libqt4-dev и qt4-qmake. Версия Qt 4.8.x.
 
     git clone git://github.com/theanonym/onechan-plusoner.git
@@ -9,6 +12,3 @@
     make
     make clean
     ./plusoner
-
-## Баги
-* У некоторых под виндой почему-то не отображается капча.
