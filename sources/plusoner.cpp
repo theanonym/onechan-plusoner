@@ -70,7 +70,7 @@ QString Plusoner::proxyToString() const
  */
 void Plusoner::setCookies(const QString & text)
 {
-   m_nmanager->cookieJar()->setCookiesFromUrl(QNetworkCookie::parseCookies(text.toAscii()), QUrl("http://1chan.ru"));
+   m_nmanager->cookieJar()->setCookiesFromUrl(QNetworkCookie::parseCookies(text.toUtf8()), QUrl("http://1chan.ru"));
 }
 
 /*

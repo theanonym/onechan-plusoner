@@ -31,7 +31,7 @@ bool YobaDB::saveToFile(const QString & fname) const
       QMap<QString, QString>::const_iterator it = m_db.begin();
       while(it != m_db.end())
       {
-         file.write(QString("KEY{[(\"%1\")]}=VALUE{[(\"%2\")]}").arg(it.key(), it.value()).toAscii());
+         file.write(QString("KEY{[(\"%1\")]}=VALUE{[(\"%2\")]}").arg(it.key(), it.value()).toUtf8());
          file.putChar('\n');
          it++;
       }
@@ -56,7 +56,7 @@ bool YobaDB::loadFromFile(const QString & fname)
 {
    clear();
 
-   static QRegExp regex("KEY\\{\\[\\(\"(.*)\"\\)\\]\\}=VALUE\\{\\[\\(\"(.*)\"\\)\\]\\}");
+   QRegExp regex("KEY\\{\\[\\(\"(.*)\"\\)\\]\\}=VALUE\\{\\[\\(\"(.*)\"\\)\\]\\}");
    regex.setMinimal(true);
 
    QFile file(fname);

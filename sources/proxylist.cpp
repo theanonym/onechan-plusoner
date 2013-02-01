@@ -120,7 +120,7 @@ bool Proxylist::saveToFile(const QString & fname) const
       foreach(const QNetworkProxy & p, m_proxies)
       {
          QString line = QString("http://%1:%2\n").arg(p.hostName(), QString::number(p.port()));
-         file.write(line.toAscii());
+         file.write(line.toUtf8());
       }
 
       return true;

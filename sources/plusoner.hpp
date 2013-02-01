@@ -1,4 +1,4 @@
- /**
+/**
 *
 * (C) 2013 Theanonym
 *
@@ -23,6 +23,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QNetworkCookie>
 #include <QNetworkCookieJar>
 #include <QNetworkProxy>
 #include <QPixmap>
