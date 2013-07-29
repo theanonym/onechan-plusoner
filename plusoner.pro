@@ -5,24 +5,24 @@ TARGET = plusoner
 
 TEMPLATE = app
 
-SOURCES += main.cpp\
-    sources/plusoner.cpp \
-    sources/plusonerthread.cpp \
-    sources/proxylist.cpp \
-    sources/gui.cpp \
-    sources/yobadb.cpp
+SOURCES += src/main.cpp\
+    src/plusoner.cpp \
+    src/plusonerthread.cpp \
+    src/proxylist.cpp \
+    src/gui.cpp \
+    src/yobadb.cpp
 
 HEADERS += \
-    sources/plusoner.hpp \
-    sources/plusonerthread.hpp \
-    sources/proxylist.hpp \
-    sources/gui.hpp \
-    sources/yobadb.hpp
+    src/plusoner.hpp \
+    src/plusonerthread.hpp \
+    src/proxylist.hpp \
+    src/gui.hpp \
+    src/yobadb.hpp
 
 FORMS += \
     forms/gui.ui
 
 RESOURCES += \
-    resources/res.qrc
+    res/res.qrc
 
-RC_FILE = resources/icon.rc
+RC_FILE = res/icon.rc

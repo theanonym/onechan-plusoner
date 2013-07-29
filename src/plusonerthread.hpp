@@ -2,7 +2,7 @@
 *
 * (C) 2013 Theanonym
 *
-* https://github.com/theanonym/yoba-onechan-plusoner
+* https://github.com/theanonym/onechan-plusoner
 *
 */
 
@@ -16,6 +16,7 @@
 #define PLUSONERTHREAD_HPP
 
 #include <QThread>
+#include <QPointer>
 
 #include "plusoner.hpp"
 
@@ -23,7 +24,7 @@ class PlusonerThread : public QThread
 {
    Q_OBJECT
 
-   Plusoner * m_plusoner;
+   QPointer<Plusoner> m_plusoner;
 
    void run();
 
@@ -32,7 +33,7 @@ public:
    ~PlusonerThread();
 
    inline void setPlusoner(Plusoner * plusoner) { m_plusoner = plusoner; }
-   inline Plusoner * getPlusoner() { return m_plusoner; }
+   inline Plusoner * getPlusoner() { Q_ASSERT(!m_plusoner.isNull()); return m_plusoner.data(); }
 };
 
 #endif // PLUSONERTHREAD_HPP

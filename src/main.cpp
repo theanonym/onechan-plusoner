@@ -2,7 +2,7 @@
  *
  * (C) 2013 Theanonym
  *
- * https://github.com/theanonym/yoba-onechan-plusoner
+ * https://github.com/theanonym/onechan-plusoner
  *
  */
 
@@ -10,7 +10,7 @@
 #include <QTextCodec>
 #include <QtGlobal>
 
-#include "sources/gui.hpp"
+#include "gui.hpp"
 
 int main(int argc, char ** argv)
 {

@@ -23,7 +23,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabs">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
@@ -344,14 +344,8 @@
                 </property>
                </widget>
               </item>
-              <item>
+              <item alignment="Qt::AlignHCenter">
                <widget class="QLabel" name="label_captcha">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
                 <property name="minimumSize">
                  <size>
                   <width>160</width>
@@ -559,7 +553,7 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если есть список из 100 прокси, указано&lt;span style=&quot; font-weight:600;&quot;&gt; пропустить &lt;/span&gt;10 и &lt;span style=&quot; font-weight:600;&quot;&gt;использовать &lt;/span&gt;20, будут использованы прокси с 11 по 31 (всего 20)&lt;/p&gt;&lt;p&gt;Не рекомендуется использовать одновременно больше 160 прокси, лучше запустить несколько копий программы.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="maximum">
-                   <number>1000</number>
+                   <number>100000</number>
                   </property>
                   <property name="singleStep">
                    <number>10</number>
@@ -679,7 +673,7 @@
             <item row="0" column="1">
              <widget class="QSpinBox" name="spinbox_max_connections">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Максимум одновременных соединений&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -688,7 +682,7 @@
                <number>1</number>
               </property>
               <property name="maximum">
-               <number>150</number>
+               <number>1000</number>
               </property>
               <property name="singleStep">
                <number>10</number>

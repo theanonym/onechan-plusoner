@@ -2,7 +2,7 @@
 *
 * (C) 2013 Theanonym
 *
-* https://github.com/theanonym/yoba-onechan-plusoner
+* https://github.com/theanonym/onechan-plusoner
 *
 */
 

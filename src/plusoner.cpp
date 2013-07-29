@@ -2,7 +2,7 @@
 *
 * (C) 2013 Theanonym
 *
-* https://github.com/theanonym/yoba-onechan-plusoner
+* https://github.com/theanonym/onechan-plusoner
 *
 */
 
@@ -17,8 +17,9 @@ Plusoner::Plusoner(QObject * parent)
    m_timer->setSingleShot(true);
    connect(m_timer, SIGNAL(timeout()), SLOT(slTimeout()));
 
-   m_default_request.setRawHeader("User-Agent", "Opera/9.80 (X11; Linux i686) Presto/2.12.388 Version/12.12");
-   m_default_request.setRawHeader("Referer", "http://1chan.ru/");
+   m_default_request.setRawHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
+   m_default_request.setRawHeader("User-Agent", "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.52 Safari/537.36");
+   m_default_request.setRawHeader("Referer", "http://1chan.ru/news/all/");
 
    m_has_proxy           = false;
    m_try_vote_is_running = false;
@@ -277,7 +278,6 @@ void Plusoner::slTryVoteRequestFinished()
       m_attempts--;
 
    // Удаление ответа
-   m_try_vote_reply->disconnect();
    m_try_vote_reply->deleteLater();
 
    // Отправка сигнала гую
@@ -335,7 +335,6 @@ void Plusoner::slCaptchaRequestFinished()
       m_attempts--;
 
    // Удаление ответа
-   m_captcha_reply->disconnect();
    m_captcha_reply->deleteLater();
 
    // Отправка сигнала гую
@@ -388,7 +387,6 @@ void Plusoner::slVoteRequestFinished()
       m_attempts--;
 
    // Удаление ответа
-   m_vote_reply->disconnect();
    m_vote_reply->deleteLater();
 
    // Отправка сигнала гую

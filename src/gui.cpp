@@ -2,7 +2,7 @@
 *
 * (C) 2013 Theanonym
 *
-* https://github.com/theanonym/yoba-onechan-plusoner
+* https://github.com/theanonym/onechan-plusoner
 *
 */
 
@@ -103,7 +103,6 @@ void GUI::enableGUI()
    ui.spinbox_max_proxies->setEnabled(true);
    ui.spinbox_ignore_proxies->setEnabled(true);
    ui.button_proxies_accept->setEnabled(true);
-   ui.button_proxies_from_file->setEnabled(true);
    ui.spinbox_attempts->setEnabled(true);
    ui.spinbox_timeout->setEnabled(true);
    //ui.spinbox_max_connections->setEnabled(true);
@@ -119,7 +118,6 @@ void GUI::disableGUI()
    ui.spinbox_max_proxies->setEnabled(false);
    ui.spinbox_ignore_proxies->setEnabled(false);
    ui.button_proxies_accept->setEnabled(false);
-   ui.button_proxies_from_file->setEnabled(false);
    ui.spinbox_attempts->setEnabled(false);
    ui.spinbox_timeout->setEnabled(false);
    //ui.spinbox_max_connections->setEnabled(false);
@@ -450,7 +448,7 @@ void GUI::slStartButtonPressed()
 
       // Пауза, чтобы успели завершиться
       QEventLoop loop;
-      QTimer::singleShot(1 * 500, &loop, SLOT(quit()));
+      QTimer::singleShot(0.5 * 1000, &loop, SLOT(quit()));
       loop.exec();
 
       printMessage("Остановлено.", 0);
